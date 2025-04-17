@@ -1,3 +1,11 @@
-fertilizer_pred_models/
-crop_Pred_models/
-crop_price_model/
+/.env
+/env
+/venv
+/.venv
+/*.h5
+crop_price_prediction/*.h5
+crop_price_prediction/*.pkl
+crop_recommendation/*.joblib
+fertilizer_recommendation/*.pkl
+/*.png
+crop_price_model/*.png

@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 import joblib
 
 # Load dataset
-data = pd.read_csv('agricultural-assistant\crop_recommendation\crop_recommendation.csv')
+data = pd.read_csv('crop_recommendation/crop_recommendation.csv')
 
 # Feature and target separation
 X = data[['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']]
@@ -54,7 +54,7 @@ from sklearn.preprocessing import LabelEncoder
 import pickle
 
 # Load dataset
-fertilizer_data = pd.read_csv('agricultural-assistant\\fertilizer_recommendation\\fertilizer.csv')
+fertilizer_data = pd.read_csv('fertilizer_recommendation/fertilizer.csv')
 
 # Encode categorical columns
 label_encoders = {}

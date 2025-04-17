@@ -50,7 +50,9 @@ agricultural-assistant/
 │
 ├── main.py                     # Main application entry point
 ├── crop_price_predictor.py     # Standalone price prediction module
-└── README.md                   # This file
+├──README.md                   # This file
+└── setup.txt
+
 ```
 
 ## Data Requirements
@@ -93,7 +95,12 @@ date,crop_name,price,market_location
 2. Place your CSV data files in their respective directories.
 
 ### Running the Application
-Execute the main script:
+Execute the scripts below and train models on your own , if needed tweaking , you can do so:
+```
+python crop_price_predictor.py
+python crop_and_fertilizer_reccomend.py
+```
+after the models are saved update the path if necessary else run:
 ```
 python main.py
 ```
