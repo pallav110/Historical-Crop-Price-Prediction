@@ -1,0 +1,278 @@
+# Agricultural Assistant - Setup Guide
+
+This guide will walk you through setting up and running the Agricultural Assistant project from scratch.
+
+## Step 1: Project Structure Setup
+
+First, create the necessary directory structure:
+
+```bash
+mkdir -p agricultural-assistant/crop_recommendation
+mkdir -p agricultural-assistant/fertilizer_recommendation
+mkdir -p agricultural-assistant/crop_price_prediction
+cd agricultural-assistant
+```
+
+## Step 2: Install Required Dependencies
+
+Install all necessary Python packages:
+
+```bash
+pip install pandas numpy scikit-learn tensorflow joblib matplotlib
+```
+
+## Step 3: Add Your Data Files
+
+Place your CSV files in their respective directories:
+
+1. Place `crop_recommendation.csv` in the `crop_recommendation` directory
+2. Place `fertilizer.csv` in the `fertilizer_recommendation` directory
+
+## Step 4: Generate Historical Price Data
+
+Run the price data collector script to generate synthetic historical price data:
+
+```bash
+python price_data_collector.py -o crop_price_prediction/historical_prices.csv
+```
+
+This will create a CSV file with synthetic price data for multiple crops and markets.
+
+## Step 5: Create the Application Files
+
+Create the following Python files in your project directory:
+
+1. `crop_price_predictor.py` - Standalone price prediction module
+2. `main.py` - Main application entry point
+
+Copy the provided code into these files.
+
+## Step 6: Train the Models
+
+Before using the integrated system, you need to train the individual models:
+
+### Train Crop Recommendation Model:
+
+```bash
+cd crop_recommendation
+python -c "
+import pandas as pd
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+import joblib
+
+# Load dataset
+data = pd.read_csv('crop_recommendation.csv')
+
+# Feature and target separation
+X = data[['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']]
+y = data['label']
+
+# Encode target labels
+label_encoder = LabelEncoder()
+y_encoded = label_encoder.fit_transform(y)
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
+
+# Feature scaling
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+
+# Train a simpler model for quick setup
+rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_model.fit(X_train_scaled, y_train)
+
+# Save model components
+joblib.dump(rf_model, 'best_rf_model.joblib')
+joblib.dump(scaler, 'scaler.joblib')
+joblib.dump(label_encoder, 'label_encoder.joblib')
+print('Crop recommendation model trained and saved!')
+"
+cd ..
+```
+
+### Train Fertilizer Recommendation Model:
+
+```bash
+cd fertilizer_recommendation
+python -c "
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+import pickle
+
+# Load dataset
+fertilizer_data = pd.read_csv('fertilizer.csv')
+
+# Encode categorical columns
+label_encoders = {}
+for col in ['Soil Type', 'Crop Type', 'Fertilizer Name']:
+    le = LabelEncoder()
+    fertilizer_data[col] = le.fit_transform(fertilizer_data[col])
+    label_encoders[col] = le
+
+# Save label encoders
+with open('label_encoders.pkl', 'wb') as le_file:
+    pickle.dump(label_encoders, le_file)
+
+# Define features and target
+X = fertilizer_data.drop(columns=['Fertilizer Name'])
+y = fertilizer_data['Fertilizer Name']
+
+# Train the model
+fertilizer_model = RandomForestClassifier(random_state=42)
+fertilizer_model.fit(X, y)
+
+# Save the trained model
+with open('fertilizer_model.pkl', 'wb') as model_file:
+    pickle.dump(fertilizer_model, model_file)
+    
+print('Fertilizer recommendation model trained and saved!')
+"
+cd ..
+```
+
+### Train Price Prediction Model:
+
+```bash
+cd crop_price_prediction
+python -c "
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+import joblib
+import os
+
+# Parameters
+sequence_length = 30
+prediction_days = 5
+model_path = 'lstm_model.h5'
+scaler_path = 'price_scaler.pkl'
+
+# Load data
+df = pd.read_csv('historical_prices.csv')
+# We'll use rice prices from Mumbai for training
+crop_data = df[(df['crop_name'] == 'rice') & (df['market_location'] == 'Mumbai')]
+crop_data = crop_data.sort_values('date')
+
+# Extract price column
+prices = crop_data['price'].values.reshape(-1, 1)
+
+# Scale the data
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled_prices = scaler.fit_transform(prices)
+
+# Create sequences
+X, y = [], []
+for i in range(len(scaled_prices) - sequence_length - prediction_days + 1):
+    X.append(scaled_prices[i:i+sequence_length])
+    y.append(scaled_prices[i+sequence_length:i+sequence_length+prediction_days])
+X, y = np.array(X), np.array(y)
+
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+
+# Reshape y_train for model output
+y_train_reshaped = y_train.reshape(y_train.shape[0], prediction_days)
+
+# Build the model
+model = Sequential()
+model.add(LSTM(units=50, return_sequences=True, input_shape=(sequence_length, 1)))
+model.add(Dropout(0.2))
+model.add(LSTM(units=50))
+model.add(Dropout(0.2))
+model.add(Dense(units=prediction_days))
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# Train the model
+model.fit(X_train, y_train_reshaped, epochs=10, batch_size=32, validation_split=0.1, verbose=1)
+
+# Save model and scaler
+model.save(model_path)
+joblib.dump(scaler, scaler_path)
+
+print('Price prediction model trained and saved!')
+"
+cd ..
+```
+
+## Step 7: Run the Complete System
+
+Now you can run the integrated system:
+
+```bash
+python main.py
+```
+
+This will present an interactive menu with three options:
+
+1. Crop Recommendation
+2. Fertilizer Recommendation
+3. Crop Price Prediction
+
+## Step 8: Testing Each Component
+
+### Test Crop Recommendation:
+Choose option 1 from the main menu and enter sample values:
+- N (Nitrogen): 90
+- P (Phosphorus): 42
+- K (Potassium): 43
+- Temperature: 21
+- Humidity: 82
+- pH: 6.5
+- Rainfall: 203
+
+### Test Fertilizer Recommendation:
+Choose option 2 from the main menu and enter sample values:
+- Temperature: 26
+- Humidity: 52
+- Moisture: 38
+- Soil Type: Sandy
+- Crop Type: Maize
+- Nitrogen: 37
+- Potassium: 0
+- Phosphorous: 0
+
+### Test Crop Price Prediction:
+Choose option 3 from the main menu and enter:
+- Path to historical price data: crop_price_prediction/historical_prices.csv
+- Crop name: rice (or leave blank for all crops)
+
+## Extending the Project
+
+Here are some ways to extend the project after getting the basic system working:
+
+1. **Add a web interface** using Flask or Django to make the system more accessible.
+2. **Incorporate real-time weather data** using APIs like OpenWeatherMap.
+3. **Improve the price prediction model** by adding more features like weather factors or economic indicators.
+4. **Add geospatial analysis** to provide region-specific recommendations.
+5. **Create a mobile app** for easier access in the field.
+
+## Troubleshooting
+
+### Common Issues:
+
+1. **Model Not Found** - Ensure you've completed the training steps for all models.
+2. **Data Format Issues** - Double-check your CSV files match the expected format.
+3. **Module Not Found** - Verify all required packages are installed.
+4. **Value Error** - Make sure input values are within expected ranges for your models.
+
+### Debugging:
+
+Add detailed logging to track the flow of your application:
+
+```python
+import logging
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    filename='agricultural_assistant.log')
+```
+
+Then add logging statements throughout your code to track execution flow.
