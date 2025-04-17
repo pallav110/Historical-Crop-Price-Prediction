@@ -249,4 +249,4 @@ if __name__ == '__main__':
     os.makedirs('outputs', exist_ok=True)
     os.makedirs('data', exist_ok=True)
     
-    app.run(debug=True)
+    app.run(debug=True , port=7000)

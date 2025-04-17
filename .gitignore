@@ -15,3 +15,5 @@ static/outputs
 outputs/*png
 
 
+/__pycache__
+
