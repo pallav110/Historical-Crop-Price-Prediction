@@ -12,11 +12,11 @@ class AgriculturalAssistant:
     def __init__(self):
         """Initialize the integrated agricultural assistant system"""
         self.base_path = os.path.dirname(os.path.abspath(__file__))
-        self.crop_model_path = os.path.join(self.base_path, "best_rf_model.joblib")
-        self.crop_scaler_path = os.path.join(self.base_path, "scaler.joblib")
-        self.crop_encoder_path = os.path.join(self.base_path, "label_encoder.joblib")
-        self.fertilizer_model_path = os.path.join(self.base_path, "fertilizer_model.pkl")
-        self.fertilizer_encoder_path = os.path.join(self.base_path, "label_encoders.pkl")
+        self.crop_model_path = os.path.join(self.base_path, "crop_Pred_models/best_rf_model.joblib")
+        self.crop_scaler_path = os.path.join(self.base_path, "crop_Pred_models/scaler.joblib")
+        self.crop_encoder_path = os.path.join(self.base_path, "crop_Pred_models/label_encoder.joblib")
+        self.fertilizer_model_path = os.path.join(self.base_path, "fertilizer_pred_models/fertilizer_model.pkl")
+        self.fertilizer_encoder_path = os.path.join(self.base_path, "fertilizer_pred_models/label_encoders.pkl")
         self.price_model_path = os.path.join(self.base_path, "crop_price_model/lstm_model.h5")
         self.price_scaler_path = os.path.join(self.base_path, "crop_price_model/price_scaler.pkl")
         
