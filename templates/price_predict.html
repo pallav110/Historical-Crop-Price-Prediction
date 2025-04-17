@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h2>Crop Price Prediction</h2>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('price_prediction') }}" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="crop_name" class="form-label">Crop Name (optional)</label>
+                <input type="text" class="form-control" id="crop_name" name="crop_name" placeholder="Leave blank for all crops">
+                <div class="form-text">If your data file contains multiple crops, specify which crop to predict prices for.</div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="price_data" class="form-label">Historical Price Data (CSV)</label>
+                <input class="form-control" type="file" id="price_data" name="price_data" accept=".csv" required>
+                <div class="form-text">CSV file should contain at least 'date' and 'price' columns.</div>
+            </div>
+            
+            <button type="submit" class="btn btn-success">Predict Prices</button>
+        </form>
+        
+        <div class="mt-4">
+            <h5>Sample CSV Format:</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>date</th>
+                            <th>price</th>
+                            <th>crop_name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2023-01-01</td>
+                            <td>45.2</td>
+                            <td>wheat</td>
+                        </tr>
+                        <tr>
+                            <td>2023-01-02</td>
+                            <td>46.1</td>
+                            <td>wheat</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ url_for('static', filename='sample_price_data.csv') }}" class="btn btn-outline-success btn-sm">Download Sample Data</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

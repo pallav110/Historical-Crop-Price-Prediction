@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h2>Price Prediction Result for {{ result.crop_name }}</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Price Predictions:</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Predicted Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pred in result.predictions %}
+                            <tr>
+                                <td>{{ pred.date if pred.date else 'Day ' + pred.day|string }}</td>
+                                <td>₹{{ "%.2f"|format(pred.price) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h4>Price Trend:</h4>
+                <img src="{{ url_for('output_file', filename=result.plot_file.split('/')[-1]) }}" alt="Price Prediction Chart" class="img-fluid">
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('price_prediction') }}" class="btn btn-outline-success">New Prediction</a>
+            <a href="{{ url_for('generate_report') }}" class="btn btn-success">Generate Full Report</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

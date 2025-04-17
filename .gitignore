@@ -9,3 +9,9 @@ crop_recommendation/*.joblib
 fertilizer_recommendation/*.pkl
 /*.png
 crop_price_model/*.png
+/data/
+/outputs/
+static/outputs
+outputs/*png
+
+

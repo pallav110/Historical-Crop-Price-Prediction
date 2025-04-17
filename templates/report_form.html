@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h2>Generate Agricultural Report</h2>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('generate_report') }}" enctype="multipart/form-data">
+            <h4 class="mb-3">Crop Information</h4>
+            <div class="mb-3">
+                <label for="crop_name" class="form-label">Crop Name</label>
+                <input type="text" class="form-control" id="crop_name" name="crop_name" required>
+            </div>
+            
+            <h4 class="mb-3 mt-4">Soil Analysis</h4>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="nitrogen" class="form-label">Nitrogen (N)</label>
+                    <input type="number" class="form-control" id="nitrogen" name="nitrogen" min="0" max="200" step="0.1" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="phosphorous" class="form-label">Phosphorous (P)</label>
+                    <input type="number" class="form-control" id="phosphorous" name="phosphorous" min="0" max="200" step="0.1" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="potassium" class="form-label">Potassium (K)</label>
+                    <input type="number" class="form-control" id="potassium" name="potassium" min="0" max="200" step="0.1" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="ph" class="form-label">pH Level</label>
+                    <input type="number" class="form-control" id="ph" name="ph" min="0" max="14" step="0.1" required>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="soil_type" class="form-label">Soil Type</label>
+                <select class="form-select" id="soil_type" name="soil_type" required>
+                    <option value="" selected disabled>Select Soil Type</option>
+                    {% for soil in soil_types %}
+                        <option value="{{ soil }}">{{ soil }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <h4 class="mb-3 mt-4">Weather Conditions</h4>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="temperature" class="form-label">Temperature (°C)</label>
+                    <input type="number" class="form-control" id="temperature" name="temperature" min="-20" max="60" step="0.1" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="humidity" class="form-label">Humidity (%)</label>
+                    <input type="number" class="form-control" id="humidity" name="humidity" min="0" max="100" step="0.1" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="rainfall" class="form-label">Rainfall (mm)</label>
+                    <input type="number" class="form-control" id="rainfall" name="rainfall" min="0" max="5000" step="0.1" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="moisture" class="form-label">Moisture (%)</label>
+                    <input type="number" class="form-control" id="moisture" name="moisture" min="0" max="100" step="0.1" required>
+                </div>
+            </div>
+            
+            <h4 class="mb-3 mt-4">Price Data (Optional)</h4>
+            <div class="mb-3">
+                <label for="price_data" class="form-label">Historical Price Data (CSV)</label>
+                <input class="form-control" type="file" id="price_data" name="price_data" accept=".csv">
+                <div class="form-text">Include price data to get price forecasts in your report.</div>
+            </div>
+            
+            <h4 class="mb-3 mt-4">Export Options</h4>
+            <div class="mb-3">
+                <label class="form-label">Report Format</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="export_format" id="format_text" value="text" checked>
+                    <label class="form-check-label" for="format_text">Text File (.txt)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="export_format" id="format_json" value="json">
+                    <label class="form-check-label" for="format_json">JSON (.json)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="export_format" id="format_csv" value="csv">
+                    <label class="form-check-label" for="format_csv">CSV (.csv)</label>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-success mt-3">Generate Report</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

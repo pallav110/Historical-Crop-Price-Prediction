@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h2>Fertilizer Recommendation Result</h2>
+    </div>
+    <div class="card-body">
+        <h3 class="mb-4">Recommended Fertilizer: <span class="text-success">{{ result.fertilizer }}</span></h3>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Input Parameters:</h4>
+                <ul class="list-group mb-4">
+                    <li class="list-group-item">Temperature: {{ result.input.temperature }}°C</li>
+                    <li class="list-group-item">Humidity: {{ result.input.humidity }}%</li>
+                    <li class="list-group-item">Moisture: {{ result.input.moisture }}%</li>
+                    <li class="list-group-item">Soil Type: {{ result.input.soil_type }}</li>
+                    <li class="list-group-item">Crop Type: {{ result.input.crop_type }}</li>
+                    <li class="list-group-item">Nitrogen (N): {{ result.input.nitrogen }}</li>
+                    <li class="list-group-item">Potassium (K): {{ result.input.potassium }}</li>
+                    <li class="list-group-item">Phosphorous (P): {{ result.input.phosphorous }}</li>
+                </ul>
+            </div>
+            
+            <div class="col-md-6">
+                <h4>Nutrient Suggestions:</h4>
+                <div class="card">
+                    <div class="card-body">
+                        {% for suggestion in result.suggestions %}
+                            <div class="mb-3">
+                                {{ suggestion|safe }}
+                            </div>
+                            {% if not loop.last %}<hr>{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('fertilizer_recommendation') }}" class="btn btn-outline-success">New Recommendation</a>
+            <a href="{{ url_for('generate_report') }}" class="btn btn-success">Generate Full Report</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

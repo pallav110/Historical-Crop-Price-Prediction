@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h2>Crop Recommendation Result</h2>
+    </div>
+    <div class="card-body">
+        <h3 class="mb-4">Recommended Crop: <span class="text-success">{{ result.recommendation }}</span></h3>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Input Parameters:</h4>
+                <ul class="list-group mb-4">
+                    <li class="list-group-item">Nitrogen (N): {{ result.input.N }}</li>
+                    <li class="list-group-item">Phosphorus (P): {{ result.input.P }}</li>
+                    <li class="list-group-item">Potassium (K): {{ result.input.K }}</li>
+                    <li class="list-group-item">Temperature: {{ result.input.temperature }}°C</li>
+                    <li class="list-group-item">Humidity: {{ result.input.humidity }}%</li>
+                    <li class="list-group-item">pH: {{ result.input.ph }}</li>
+                    <li class="list-group-item">Rainfall: {{ result.input.rainfall }} mm</li>
+                </ul>
+            </div>
+            
+            <div class="col-md-6">
+                <h4>Crop Information:</h4>
+                <div class="card">
+                    <div class="card-body">
+                        <p>Information about growing {{ result.recommendation }} would be displayed here.</p>
+                        <p>This could include ideal conditions, planting tips, common pests, etc.</p>
+                        <p>Feature to be implemented in a future update.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('crop_recommendation') }}" class="btn btn-outline-success">New Recommendation</a>
+            <a href="{{ url_for('generate_report') }}" class="btn btn-success">Generate Full Report</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
