@@ -49,6 +49,20 @@ agricultural-assistant/
 │   ├── price_scaler.pkl        # Price scaler
 │   └── historical_prices.csv   # Historical price data
 │
+├──static/styles.css
+├──templates/
+│     ├──reports/
+│     │    ├──crop_results.html
+│     │    ├──fertilizer_results.html
+│     │    └──price_results.html
+│     ├──base.html
+│     ├──crop_recommend.html
+│     ├──index.html
+│     ├──fertilizer.html
+│     ├──price_predict.html
+│     ├──report_form.html
+│     └──report.html
+├──app.py                      #Flask implementation
 ├── main.py                     # Main application entry point
 ├── crop_price_predictor.py     # Standalone price prediction module
 ├──README.md                   # This file
