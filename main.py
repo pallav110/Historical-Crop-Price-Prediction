@@ -319,7 +319,7 @@ class AgriculturalAssistant:
                 return f"Not enough historical data. Need at least {sequence_length} days, but found {len(crop_data)}."
             
             # Extract price data
-            prices = crop_data['price'].values.reshape(-1, 1)
+            prices = crop_data['price'].values
             
             # Verify price data has valid values
             if np.any(np.isnan(prices)) or np.any(np.isinf(prices)):
@@ -334,24 +334,47 @@ class AgriculturalAssistant:
                     prices = prices + offset
             
             try:
-                # Create input sequence for prediction 
-                X_pred = prices[-sequence_length:].reshape(1, sequence_length, 1)
+                # Create additional features similar to what was used during training
+                # Calculate rolling statistics for price
+                price_7d_mean = np.convolve(prices, np.ones(7)/7, mode='same')
+                price_30d_mean = np.convolve(prices, np.ones(30)/30, mode='same')
                 
-                # Check if we're using the right scaler dimensions
-                # This addresses potential mismatch between scaler and model expectations
-                if hasattr(self.price_scaler, 'n_features_in_') and self.price_scaler.n_features_in_ > 1:
-                    # Create dummy features to match scaler expectations
-                    extended_features = np.zeros((len(X_pred[0]), self.price_scaler.n_features_in_))
-                    extended_features[:, 0] = X_pred[0].flatten()  # Put price in first column
-                    
-                    # Scale the extended features
-                    scaled_features = self.price_scaler.transform(extended_features)
-                    
-                    # Use only the price column as input to the model
-                    X_pred_scaled = scaled_features[:, 0].reshape(1, sequence_length, 1)
+                # Calculate rolling standard deviation (simple approach)
+                price_7d_std = []
+                for i in range(len(prices)):
+                    start_idx = max(0, i-6)
+                    price_7d_std.append(np.std(prices[start_idx:i+1]))
+                price_7d_std = np.array(price_7d_std)
+                
+                # Get date features if available
+                if 'date' in crop_data.columns:
+                    month = crop_data['date'].dt.month.values
+                    day_of_week = crop_data['date'].dt.dayofweek.values
+                    day_of_year = crop_data['date'].dt.dayofyear.values
                 else:
-                    # Simple case where scaler expects only the price
-                    X_pred_scaled = self.price_scaler.transform(X_pred.reshape(-1, 1)).reshape(1, sequence_length, 1)
+                    # Use dummy values if date not available
+                    month = np.ones_like(prices)
+                    day_of_week = np.ones_like(prices)
+                    day_of_year = np.ones_like(prices)
+                
+                # Combine all features - must match exactly what the model was trained with
+                features = np.column_stack([
+                    prices,
+                    price_7d_mean,
+                    price_30d_mean,
+                    price_7d_std,
+                    month,
+                    day_of_week,
+                    day_of_year
+                ])
+                
+                # Create input sequence for prediction (use last sequence_length days)
+                X_pred = features[-sequence_length:].reshape(1, sequence_length, 7)
+                
+                # Scale the features
+                X_pred_scaled = np.zeros_like(X_pred)
+                for i in range(sequence_length):
+                    X_pred_scaled[0, i] = self.price_scaler.transform(X_pred[0, i].reshape(1, -1))
                 
                 # Make prediction
                 prediction_scaled = self.price_model.predict(X_pred_scaled)
@@ -360,57 +383,55 @@ class AgriculturalAssistant:
                 prediction_scaled_reshaped = prediction_scaled.reshape(-1, 1)
                 
                 # Inverse transform to get actual prices
-                if hasattr(self.price_scaler, 'n_features_in_') and self.price_scaler.n_features_in_ > 1:
-                    # Create dummy array for inverse transform
-                    dummy_array = np.zeros((len(prediction_scaled_reshaped), self.price_scaler.n_features_in_))
-                    dummy_array[:, 0] = prediction_scaled_reshaped.flatten()
-                    
-                    # Inverse transform
-                    predicted_full = self.price_scaler.inverse_transform(dummy_array)
-                    predicted_prices = predicted_full[:, 0]  # Extract price column
-                else:
-                    predicted_prices = self.price_scaler.inverse_transform(prediction_scaled_reshaped).flatten()
-            except Exception as e:
-                traceback.print_exc()
-                return f"Error during prediction: {e}"
-            
-            # Post-process predictions to ensure they're reasonable
-            # Clip to reasonable range based on historical data
-            min_allowed = max(0.1, np.min(prices) * 0.5)  # Min price at least 0.1 but could be lower if data shows it
-            max_allowed = np.max(prices) * 2.0  # Max at double the highest historical price
-            predicted_prices = np.clip(predicted_prices, min_allowed, max_allowed)
-            
-            # Generate future dates
-            prediction_days = len(predicted_prices)
-            if 'date' in crop_data.columns:
-                last_date = crop_data['date'].iloc[-1]
-                future_dates = self.generate_future_dates(last_date, prediction_days)
+                # Create dummy array with same number of features
+                dummy_array = np.zeros((len(prediction_scaled_reshaped), 7))
+                dummy_array[:, 0] = prediction_scaled_reshaped.flatten()  # Put scaled predictions in price column
                 
-                # Create result dictionary
-                result = {
-                    "prediction": [
-                        {"date": date.strftime('%Y-%m-%d'), "price": float(price)}
-                        for date, price in zip(future_dates, predicted_prices)
-                    ]
-                }
-            else:
-                result = {
-                    "prediction": [
-                        {"day": i+1, "price": float(price)}
-                        for i, price in enumerate(predicted_prices)
-                    ]
-                }
-            
-            # Visualize the prediction
-            plot_file = self.visualize_price_prediction(
-                crop_data['price'].values[-30:],
-                predicted_prices,
-                crop_name
-            )
-            
-            result["plot_file"] = plot_file
-            return result
-            
+                # Inverse transform and extract only the price column
+                predicted_full = self.price_scaler.inverse_transform(dummy_array)
+                predicted_prices = predicted_full[:, 0]  # Extract price column
+                
+                # Post-process predictions to ensure they're reasonable
+                # Clip to reasonable range based on historical data
+                min_allowed = max(0.1, np.min(prices) * 0.5)  # Min price at least 0.1 but could be lower if data shows it
+                max_allowed = np.max(prices) * 2.0  # Max at double the highest historical price
+                predicted_prices = np.clip(predicted_prices, min_allowed, max_allowed)
+                
+                # Generate future dates
+                prediction_days = len(predicted_prices)
+                if 'date' in crop_data.columns:
+                    last_date = crop_data['date'].iloc[-1]
+                    future_dates = self.generate_future_dates(last_date, prediction_days)
+                    
+                    # Create result dictionary
+                    result = {
+                        "prediction": [
+                            {"date": date.strftime('%Y-%m-%d'), "price": float(price)}
+                            for date, price in zip(future_dates, predicted_prices)
+                        ]
+                    }
+                else:
+                    result = {
+                        "prediction": [
+                            {"day": i+1, "price": float(price)}
+                            for i, price in enumerate(predicted_prices)
+                        ]
+                    }
+                
+                # Visualize the prediction
+                plot_file = self.visualize_price_prediction(
+                    crop_data['price'].values[-30:],
+                    predicted_prices,
+                    crop_name
+                )
+                
+                result["plot_file"] = plot_file
+                return result
+                
+            except Exception as e:
+                traceback.print_exc()  # Print full stack trace for debugging
+                return f"Error during prediction: {e}"
+                
         except Exception as e:
             traceback.print_exc()  # Print full stack trace for debugging
             return f"Error in price prediction: {str(e)}"

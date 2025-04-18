@@ -13,6 +13,7 @@ crop_price_model/*.png
 /outputs/
 static/outputs
 outputs/*png
+/crop_price_model/*.h5
 
 
 /__pycache__

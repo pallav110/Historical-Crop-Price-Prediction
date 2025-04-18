@@ -28,6 +28,7 @@ This project combines three key agricultural assistance tools:
 - Output: Predicted prices for the next 5 days and a visualization graph.
 
 ## Project Structure
+## Follow this structure only thoroughly.
 
 ```
 agricultural-assistant/
@@ -100,6 +101,8 @@ Execute the scripts below and train models on your own , if needed tweaking , yo
 python crop_price_predictor.py
 python crop_and_fertilizer_reccomend.py
 ```
+For price prediction the models would be saved in crop_price_model after running the code
+Move it from that folder to crop_price_prediction.
 after the models are saved update the path if necessary else run:
 ```
 python main.py
