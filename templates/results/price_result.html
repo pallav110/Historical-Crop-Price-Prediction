@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card">
-    <div class="card-header bg-success text-white">
+
         <h2>Price Prediction Result for {{ result.crop_name }}</h2>
-    </div>
+
     <div class="card-body">
         <div class="row">
             <div class="col-md-6">
@@ -36,8 +35,7 @@
         </div>
         
         <div class="mt-4">
-            <a href="{{ url_for('price_prediction') }}" class="btn btn-outline-success">New Prediction</a>
-            <a href="{{ url_for('generate_report') }}" class="btn btn-success">Generate Full Report</a>
+            <a href="{{ url_for('price_prediction') }}" class="btn" style="background-color: #1f5666; color: white;">New Prediction</a>
         </div>
     </div>
 </div>

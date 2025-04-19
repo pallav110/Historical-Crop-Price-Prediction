@@ -9,6 +9,10 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import sys
 import traceback
+import matplotlib
+matplotlib.use('Agg')  # ✅ Use non-GUI backend to avoid Tkinter errors
+
+import matplotlib.pyplot as plt
 
 
 class AgriculturalAssistant:

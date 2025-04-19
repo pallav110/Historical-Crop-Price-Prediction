@@ -18,7 +18,7 @@ cd agricultural-assistant
 Install all necessary Python packages:
 
 ```bash
-pip install pandas numpy scikit-learn tensorflow joblib matplotlib
+pip install pandas numpy scikit-learn tensorflow joblib matplotlib supabase python-dotenv
 ```
 
 ## Step 3: Add Your Data Files

@@ -1,54 +1,46 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card">
-    <div class="card-header bg-success text-white">
-        <h2>Crop Price Prediction</h2>
+
+<!-- Hero Section with Image and Description -->
+<section class="text-center py-5" style="background: linear-gradient(to bottom, #f5f5dc, #fff6da);">
+  <div class="container">
+    <img src="{{ url_for('static', filename='price.jpg') }}" 
+         alt="Crop Price Prediction" 
+         class="img-fluid mb-4" 
+         style="max-height: 300px; object-fit: cover; border: none; box-shadow: none; border-radius: 12px;">
+
+    <h2 class="fw-bold">Crop Price Prediction</h2>
+    <p class="lead text-muted mb-4">
+      Stay ahead of the market with our crop price prediction tool. By analyzing historical data and trends, we help you forecast the prices of various crops, ensuring you make informed decisions for your farming operations.
+    </p>
+  </div>
+</section>
+
+<!-- Price Prediction Form -->
+<section class="container my-5" data-aos="fade-up">
+  <form method="POST" action="{{ url_for('price_prediction') }}">
+    <div class="mb-3">
+      <label for="crop_name" class="form-label">Crop Name</label>
+      <select class="form-control" id="crop_name" name="crop_name" required>
+        <option value="Rice">Rice</option>
+        <option value="Wheat">Wheat</option>
+        <option value="Maize">Maize</option>
+        <option value="Cotton">Cotton</option>
+        <option value="Sugarcane">Sugarcane</option>
+      </select>
+      <div class="form-text">Select the crop for which you want to predict prices.</div>
     </div>
-    <div class="card-body">
-        <form method="POST" action="{{ url_for('price_prediction') }}" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="crop_name" class="form-label">Crop Name (optional)</label>
-                <input type="text" class="form-control" id="crop_name" name="crop_name" placeholder="Leave blank for all crops">
-                <div class="form-text">If your data file contains multiple crops, specify which crop to predict prices for.</div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="price_data" class="form-label">Historical Price Data (CSV)</label>
-                <input class="form-control" type="file" id="price_data" name="price_data" accept=".csv" required>
-                <div class="form-text">CSV file should contain at least 'date' and 'price' columns.</div>
-            </div>
-            
-            <button type="submit" class="btn btn-success">Predict Prices</button>
-        </form>
-        
-        <div class="mt-4">
-            <h5>Sample CSV Format:</h5>
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>date</th>
-                            <th>price</th>
-                            <th>crop_name</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2023-01-01</td>
-                            <td>45.2</td>
-                            <td>wheat</td>
-                        </tr>
-                        <tr>
-                            <td>2023-01-02</td>
-                            <td>46.1</td>
-                            <td>wheat</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <a href="{{ url_for('static', filename='sample_price_data.csv') }}" class="btn btn-outline-success btn-sm">Download Sample Data</a>
-        </div>
-    </div>
-</div>
+
+    <button type="submit" class="btn" style="background-color: #1f5666; color: white;">Predict Prices</button>
+  </form>
+</section>
+
+<!-- Scroll Animation Script -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script>
+  AOS.init();
+</script>
+
 {% endblock %}
