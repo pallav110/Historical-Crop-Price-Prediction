@@ -1,52 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="jumbotron bg-light p-5 rounded-lg">
-    <h1 class="display-4">Welcome to Agricultural Assistant</h1>
-    <p class="lead">Your comprehensive tool for smart farming decisions.</p>
-    <hr class="my-4">
-    <p>Get crop recommendations, fertilizer suggestions, price predictions, and detailed reports.</p>
-    
-    <div class="row mt-5">
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Crop Recommendation</h5>
-                    <p class="card-text">Find the best crops to grow based on your soil and weather conditions.</p>
-                    <a href="{{ url_for('crop_recommendation') }}" class="btn btn-success">Try Now</a>
-                </div>
-            </div>
+<section class="text-center py-5" style="background: linear-gradient(to bottom, #f5f5dc, #fff6da);">
+  <div class="container">
+    <img src="{{ url_for('static', filename='hero.jpg') }}" 
+     alt="Hero Image" 
+     class="img-fluid mb-4" 
+     style="max-height: 300px; object-fit: cover; border: none; box-shadow: none; border-radius: 12px;">
+    <h1 class="display-5 fw-bold">Smart Agriculture Solutions</h1>
+    <p class="lead text-muted mb-5">
+      Welcome to our site!,<br>
+      At AgroX, we harness the power of AI to help farmers and agricultural professionals.
+      Our platform offers smart solutions like crop price prediction for the next 5 days, personalized fertilizer recommendations, and optimal crop suggestions based on soil and climate data.
+      Make data-driven decisions with confidence and boost your yield and profits sustainably.
+    </p>
+
+    <!-- Panels -->
+    <div class="d-flex flex-column gap-5">
+
+      <!-- Panel 1 -->
+      <div class="row align-items-center" data-aos="fade-right">
+        <div class="col-md-6">
+          <img src="{{ url_for('static', filename='price.jpg') }}" class="img-fluid" style="border: none; box-shadow: none;" alt="Price Prediction">
         </div>
-        
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Fertilizer Recommendation</h5>
-                    <p class="card-text">Get personalized fertilizer suggestions for your crops.</p>
-                    <a href="{{ url_for('fertilizer_recommendation') }}" class="btn btn-success">Try Now</a>
-                </div>
-            </div>
+        <div class="col-md-6 text-start">
+          <h3>Crop Price Prediction</h3>
+          <p>Make informed decisions with our AI-powered price forecasting system for agricultural commodities.</p>
+          <a href="{{ url_for('price_prediction') }}" class="btn mt-2" style="background-color: #1f5666; color: white;">Go to Price Prediction</a>
         </div>
-        
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Price Prediction</h5>
-                    <p class="card-text">Forecast crop prices to make informed selling decisions.</p>
-                    <a href="{{ url_for('price_prediction') }}" class="btn btn-success">Try Now</a>
-                </div>
-            </div>
+      </div>
+
+      <!-- Panel 2 -->
+      <div class="row align-items-center flex-md-row-reverse" data-aos="fade-left">
+        <div class="col-md-6">
+          <img src="{{ url_for('static', filename='fertilizer.jpg') }}" class="img-fluid" style="border: none; box-shadow: none;" alt="Fertilizer">
         </div>
-        
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Generate Report</h5>
-                    <p class="card-text">Get a comprehensive analysis report for your farm.</p>
-                    <a href="{{ url_for('generate_report') }}" class="btn btn-success">Try Now</a>
-                </div>
-            </div>
+        <div class="col-md-6 text-start">
+          <h3>Fertilizer Recommendation</h3>
+          <p>Get personalized fertilizer recommendations based on your soil conditions and crop requirements.</p>
+          <a href="{{ url_for('fertilizer_recommendation') }}" class="btn mt-2" style="background-color: #1f5666; color: white;">Go to Fertilizer Recommendation</a>
         </div>
+      </div>
+
+      <!-- Panel 3 -->
+      <div class="row align-items-center" data-aos="fade-up">
+        <div class="col-md-6">
+          <img src="{{ url_for('static', filename='crop.jpg') }}" class="img-fluid" style="border: none; box-shadow: none;" alt="Crop Recommendation">
+        </div>
+        <div class="col-md-6 text-start">
+          <h3>Crop Recommendation</h3>
+          <p>Discover the best crops to grow based on your local climate, soil type, and market conditions.</p>
+          <a href="{{ url_for('crop_recommendation') }}" class="btn mt-2" style="background-color: #1f5666; color: white;">Go to Crop Recommendation</a>
+        </div>
+      </div>
+
     </div>
-</div>
+  </div>
+</section>
+
+<!-- AOS script -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script>
+  AOS.init();
+</script>
 {% endblock %}
